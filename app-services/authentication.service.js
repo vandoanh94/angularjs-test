@@ -18,7 +18,6 @@
         function Login(username, password, callback) {
             $http.get('https://df.cetsolution.com/api/v2/system/user', { 
                 headers: {
-                'Authorization': Base64.encode(username + ':' + password),
                 'X-DreamFactory-Api-Key':'1c5f47e82c663486c6b495d7cf52b742b50fc17a2a134bd1c0714b443dcfd812'},
                 username: username, 
                 password: password 
@@ -51,7 +50,6 @@
         }
     }
 
-    // Base64 encoding service used by AuthenticationService
     var Base64 = {
 
         keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
@@ -95,8 +93,6 @@
             var chr1, chr2, chr3 = "";
             var enc1, enc2, enc3, enc4 = "";
             var i = 0;
-
-            // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
             var base64test = /[^A-Za-z0-9\+\/\=]/g;
             if (base64test.exec(input)) {
                 window.alert("There were invalid base64 characters in the input text.\n" +

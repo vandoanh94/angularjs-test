@@ -9,25 +9,25 @@
     function UserService($http) {
         var service = {};
 
-        service.GetAll = GetAll;
         service.GetById = GetById;
         service.GetByUsername = GetByUsername;
         service.Create = Create;
         service.Update = Update;
-        service.Delete = Delete;
 
         return service;
 
-        function GetAll() {
-            return $http.get('/api/users').then(handleSuccess, handleError('Error getting all users'));
-        }
-
         function GetById(id) {
-            return $http.get('/api/users/' + id).then(handleSuccess, handleError('Error getting user by id'));
+            
         }
 
-        function GetByUsername(username) {
-            return $http.get('/api/users/' + username).then(handleSuccess, handleError('Error getting user by username'));
+        function GetByUsername(username,authdata) {
+            return $http.get('https://df.cetsolution.com/api/v2/system/user?filter=email%3D' + username,{
+                headers: {
+                    'Authorization': authdata,
+                    'X-DreamFactory-Api-Key':'1c5f47e82c663486c6b495d7cf52b742b50fc17a2a134bd1c0714b443dcfd812'
+                }
+            }   
+        ).then(handleSuccess, handleError('Error getting user by username'));
         }
 
         function Create(user) {
@@ -56,12 +56,30 @@
             return $http(req).then(handleSuccess, handleError('Error deleting user'));
         }
 
-        function Update(user) {
-            return $http.put('/api/users/' + user.id, user).then(handleSuccess, handleError('Error updating user'));
-        }
+        function Update(id,authdata,useredit) {
+            var parameter = JSON.stringify({
+                resource: [
+                   {
+                      name: useredit.name,
+                      username: useredit.username,
+                      first_name: useredit.first_name,
+                      last_name: useredit.last_name
+                   }
+                ]
+             });
 
-        function Delete(id) {
-            return $http.delete('/api/users/' + id).then(handleSuccess, handleError('Error deleting user'));
+             var req = {
+                method: 'PATCH',
+                url: 'https://df.cetsolution.com/api/v2/system/user?ids=' + id,
+                headers: {
+                    'Authorization': 'Basic '+ authdata,
+                    'Content-Type': 'application/json',
+                    'X-DreamFactory-Api-Key':'1c5f47e82c663486c6b495d7cf52b742b50fc17a2a134bd1c0714b443dcfd812'
+                },
+                data: parameter
+               }
+               
+            return $http(req).then(handleSuccess, handleError('Error'));
         }
 
         // private functions
