@@ -16,28 +16,16 @@
         return service;
 
         function Login(username, password, callback) {
-
-            /* Dummy authentication for testing, uses $timeout to simulate api call
-             ----------------------------------------------*/
-            $timeout(function () {
-                var response;
-                UserService.GetByUsername(username)
-                    .then(function (user) {
-                        if (user !== null && user.password === password) {
-                            response = { success: true };
-                        } else {
-                            response = { success: false, message: 'Username or password is incorrect' };
-                        }
-                        callback(response);
-                    });
-            }, 1000);
-
-            /* Use this for real authentication
-             ----------------------------------------------*/
-            //$http.post('/api/authenticate', { username: username, password: password })
-            //    .success(function (response) {
-            //        callback(response);
-            //    });
+            $http.get('https://df.cetsolution.com/api/v2/system/user', { 
+                headers: {
+                'Authorization': Base64.encode(username + ':' + password),
+                'X-DreamFactory-Api-Key':'1c5f47e82c663486c6b495d7cf52b742b50fc17a2a134bd1c0714b443dcfd812'},
+                username: username, 
+                password: password 
+            })
+               .then(function (response) {
+                   callback(response);
+               });
 
         }
 
@@ -51,10 +39,6 @@
                 }
             };
 
-            // set default auth header for http requests
-            $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-
-            // store user details in globals cookie that keeps user logged in for 1 week (or until they logout)
             var cookieExp = new Date();
             cookieExp.setDate(cookieExp.getDate() + 7);
             $cookies.putObject('globals', $rootScope.globals, { expires: cookieExp });
